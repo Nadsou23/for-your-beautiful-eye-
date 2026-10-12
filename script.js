@@ -20,11 +20,11 @@ const questions = [
 
             "Mon cerveau fonctionne normalement",
 
-            "Erreur système",
+            "Oups...Erreur système",
 
-            "Je garde parfaitement mon calme",
+            "Je fixe un point au mur pour sauver ma dignité",
 
-            "Je demande une assistance technique"
+            "RIEN"
 
         ],
 
@@ -45,11 +45,11 @@ const questions = [
 
             "10 secondes",
 
-            "30 secondes",
+            "30 secondes avec un peu de volonté",
 
-            "Environ 2 minutes",
+            "Environ 2 minutes si je pense à mon bout d sandwich que j'aurai du fini en 2016",
 
-            "Impossible à déterminer"
+            "Impossible à déterminer, je n'existe plus, je suis deja une soupe de Nada que tu peux ramasser à la cuillère"
 
         ],
 
@@ -70,11 +70,11 @@ const questions = [
 
             "Normaux",
 
-            "Jolis",
+            "Bof hh",
 
-            "Très jolis",
+            "JOLIE",
 
-            "Problématiquement magnifiques"
+            "Problématiquement MIAWgnifiques"
 
         ],
 
@@ -86,20 +86,20 @@ const questions = [
 
     {
         question:
-            "Quelle est la réaction scientifique face à un regard comme celui-ci ?",
+            "Quelle est la réaction scientifique, biologique, intergalactique face à un regard comme celui-ci ?",
 
         category:
             "PROTOCOLE DE SÉCURITÉ",
 
         answers: [
 
-            "Rester concentré",
+            "Rester concentrado",
 
-            "Prendre des notes",
+            "S'assoir et prendre des notes",
 
-            "Éviter tout contact visuel",
+            "Éviter tout contact visuel de ce BG",
 
-            "Abandonner toute tentative de rester sérieux"
+            "J'abondonne, j'en peux plus!"
 
         ],
 
@@ -118,13 +118,13 @@ const questions = [
 
         answers: [
 
-            "Les données sont insuffisantes",
+            "Les données sont insuffisantes, je peux rien en déduire",
 
-            "Il existe une anomalie",
+            "Il existe une anomalie, mais c'est quoi?",
 
-            "Le phénomène est inexplicable",
+            "Le phénomène est inexplicable ",
 
-            "Ces yeux sont beaucoup trop beaux"
+            "MIIIIIIIIIAAAAAAAAAAAAWWWWW, ces yeux sont à moi"
 
         ],
 
@@ -149,13 +149,13 @@ const questions = [
 
             "Pour tester une hypothèse",
 
-            "Pour ces beaux yeux"
+            "Pour ces beaux yeux (et bien sur le manger après..hihi)"
 
         ],
 
         correct: 3,
 
-        letter: "E"
+        letter: "<3"
     }
 
 ];
