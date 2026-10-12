@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Eye Investigation Protocol</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- PARTICULES -->
+    <div class="particles"></div>
+
+    <!-- ============================= -->
+    <!-- ÉCRAN D'ACCUEIL -->
+    <!-- ============================= -->
+
+    <section id="home" class="screen active">
+
+        <div class="terminal">
+
+            <div class="terminal-top">
+                <span class="dot red"></span>
+                <span class="dot yellow"></span>
+                <span class="dot green"></span>
+
+                <span class="terminal-title">
+                    EYE_INVESTIGATION.exe
+                </span>
+            </div>
+
+            <div class="terminal-content">
+
+                <p class="small-text">
+                    SYSTEM INITIALIZATION...
+                </p>
+
+                <h1>
+                    EYE<br>
+                    <span>INVESTIGATION</span>
+                </h1>
+
+                <p class="subtitle">
+                    Une enquête scientifique sur un phénomène
+                    particulièrement dangereux.
+                </p>
+
+                <div class="warning">
+                    ⚠ ANOMALIE DÉTECTÉE
+                </div>
+
+                <p class="description">
+                    Une paire d'yeux a été identifiée comme
+                    potentiellement responsable de plusieurs
+                    dysfonctionnements émotionnels.
+                </p>
+
+                <button onclick="startInvestigation()">
+                    COMMENCER L'ENQUÊTE →
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================= -->
+    <!-- SCAN -->
+    <!-- ============================= -->
+
+    <section id="scan" class="screen">
+
+        <div class="scan-box">
+
+            <div class="loader-circle"></div>
+
+            <h2>ANALYSE EN COURS</h2>
+
+            <p id="scanText">
+                Initialisation du protocole...
+            </p>
+
+            <div class="progress">
+                <div id="progressBar"></div>
+            </div>
+
+            <p class="percentage" id="percentage">
+                0%
+            </p>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================= -->
+    <!-- QUIZ -->
+    <!-- ============================= -->
+
+    <section id="quiz" class="screen">
+
+        <div class="quiz-container">
+
+            <div class="quiz-header">
+
+                <span id="questionNumber">
+                    QUESTION 01 / 06
+                </span>
+
+                <span id="score">
+                    DATA: 0
+                </span>
+
+            </div>
+
+            <div class="question-box">
+
+                <div class="question-category">
+                    ANALYSE VISUELLE
+                </div>
+
+                <h2 id="question">
+                    Question...
+                </h2>
+
+                <div id="answers" class="answers"></div>
+
+            </div>
+
+            <div class="letter-display">
+
+                <span>DONNÉES RÉCUPÉRÉES :</span>
+
+                <div id="letters">
+                    _ _ _ _ _ _
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================= -->
+    <!-- DECRYPTION -->
+    <!-- ============================= -->
+
+    <section id="decrypt" class="screen">
+
+        <div class="decrypt-box">
+
+            <p class="small-text">
+                ANALYSIS COMPLETE
+            </p>
+
+            <h2>
+                TOUTES LES DONNÉES<br>
+                ONT ÉTÉ RÉCUPÉRÉES.
+            </h2>
+
+            <div class="data-stream" id="dataStream">
+                01001001 01001110 01001001
+            </div>
+
+            <button onclick="decryptWord()">
+                DÉCHIFFRER LE MOT →
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- ============================= -->
+    <!-- FINAL -->
+    <!-- ============================= -->
+
+    <section id="final" class="screen">
+
+        <div class="final-box">
+
+            <p class="small-text">
+                ACCESS GRANTED
+            </p>
+
+            <div class="heart">
+                ♥
+            </div>
+
+            <p class="final-intro">
+                Après analyse approfondie...
+            </p>
+
+            <h1 id="finalWord">
+                AMOUR
+            </h1>
+
+            <div class="line"></div>
+
+            <p class="final-message">
+
+                Plusieurs anomalies ont été détectées.
+
+            </p>
+
+            <div class="results">
+
+                <p>✓ Beauté anormalement élevée</p>
+
+                <p>✓ Résistance au regard : impossible</p>
+
+                <p>✓ Effets secondaires : sourire incontrôlable</p>
+
+                <p>✓ Cause probable : <strong>TOI</strong></p>
+
+            </div>
+
+            <p class="love-message">
+
+                Je ne fais pas ça pour ces beaux yeux.
+                <br><br>
+
+                <strong>
+                    Je le fais exactement pour ces beaux yeux.
+                </strong>
+
+            </p>
+
+            <button onclick="restart()">
+                ↻ RESTART THE EXPERIMENT
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
