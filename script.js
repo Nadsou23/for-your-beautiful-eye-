@@ -1,531 +1,334 @@
+// ==========================================
+// PROTOCOLE D'INVESTIGATION — TES BEAUX YEUX
+// ==========================================
 
-"use strict";
+const ecrans = document.querySelectorAll(".ecran");
 
-/* =====================================================
-   CONFIGURATION
-   Modifie ici le mot secret et le texte de la déclaration.
-   Les lettres gagnées par le quiz doivent correspondre
-   aux lettres du mot secret, dans le même ordre.
-   ===================================================== */
-
-const SECRET_WORD = "AMOUR";
-
-const LOVE_MESSAGE = (name) =>
-  `Tu sais, ${name}, il y a quelque chose chez toi que je trouve vraiment fascinant : tes yeux.
-
-  Je ne sais pas si tu réalises l'effet qu'ils peuvent avoir, mais ils ont ce petit quelque chose qui attire mon attention et qui rend difficile le fait de regarder ailleurs.
-
-  Alors, après cette longue enquête, mon verdict est officiel : tes yeux sont bien trop beaux pour passer inaperçus. Et si j'ai créé tout ce protocole, c'est simplement parce que certaines choses méritent d'être dites d'une façon un peu spéciale.
-
-  Fin du rapport. Mais certainement pas de la fascination. ♥`;
-
-/*
-  Chaque question récompense une lettre précise.
-  Pour garder le mot AMOUR cohérent, ne change pas les
-  lettres de récompense sans adapter le mot et les questions.
-*/
-const QUESTIONS = [
-  {
-    letter: "A",
-    question: "Quel est le premier réflexe quand un regard attire vraiment l'attention ?",
-    answers: [
-      "Faire semblant de ne rien avoir remarqué",
-      "Avoir envie de le regarder encore",
-      "Regarder immédiatement ailleurs"
-    ],
-    correct: 1,
-    success: "Analyse validée. Ce regard mérite clairement une deuxième observation."
-  },
-  {
-    letter: "M",
-    question: "Quel est le meilleur mot pour décrire des yeux qui restent en mémoire ?",
-    answers: [
-      "Ordinaires",
-      "Inoubliables",
-      "Discrets"
-    ],
-    correct: 1,
-    success: "Réponse acceptée. Le dossier confirme une fascination persistante."
-  },
-  {
-    letter: "O",
-    question: "Si ses yeux pouvaient transmettre un message, lequel serait le plus probable ?",
-    answers: [
-      "Regarde ailleurs",
-      "Rien à signaler",
-      "Observe encore un peu"
-    ],
-    correct: 2,
-    success: "Signal détecté. Le regard du sujet semble difficile à ignorer."
-  },
-  {
-    letter: "U",
-    question: "Quel est le risque principal d'un regard aussi captivant ?",
-    answers: [
-      "Oublier ce qu'on voulait dire",
-      "Terminer l'enquête trop vite",
-      "Ne plus jamais regarder les étoiles"
-    ],
-    correct: 0,
-    success: "Alerte confirmée : perte momentanée de concentration."
-  },
-  {
-    letter: "R",
-    question: "Quelle est la conclusion scientifique de cette enquête ?",
-    answers: [
-      "Le sujet est parfaitement ordinaire",
-      "Les preuves sont insuffisantes",
-      "Ces yeux méritent une déclaration"
-    ],
-    correct: 2,
-    success: "Conclusion validée. Le rapport peut être déclassifié."
-  }
-];
-
-/* =====================================================
-   ÉLÉMENTS DU SITE
-   ===================================================== */
-
-const screens = {
-  welcome: document.getElementById("welcome-screen"),
-  scan: document.getElementById("scan-screen"),
-  quiz: document.getElementById("quiz-screen"),
-  decrypt: document.getElementById("decrypt-screen"),
-  final: document.getElementById("final-screen")
-};
-
-const identityForm = document.getElementById("identity-form");
-const subjectInput = document.getElementById("subject-name");
-
-const scanMessage = document.getElementById("scan-message");
-const scanProgress = document.getElementById("scan-progress");
-const scanPercent = document.getElementById("scan-percent");
-const scanStatus = document.getElementById("scan-status");
-
-const questionNumber = document.getElementById("question-number");
-const questionTag = document.getElementById("question-tag");
-const questionText = document.getElementById("question-text");
-const answersContainer = document.getElementById("answers");
-const answerFeedback = document.getElementById("answer-feedback");
-const nextButton = document.getElementById("next-question");
-const quizProgress = document.getElementById("quiz-progress");
-const letterSlots = document.getElementById("letter-slots");
-
-const decryptLetters = document.getElementById("decrypt-letters");
-const decryptStatus = document.getElementById("decrypt-status");
-const decryptButton = document.getElementById("decrypt-button");
-
-const finalName = document.getElementById("final-name");
-const revealedWord = document.getElementById("revealed-word");
-const loveMessage = document.getElementById("love-message");
-const restartButton = document.getElementById("restart-button");
-
-const glitchOverlay = document.getElementById("glitch-overlay");
-const glitchClose = document.getElementById("glitch-close");
-const easterEgg = document.getElementById("easter-egg");
-const easterToast = document.getElementById("easter-toast");
-
-/* =====================================================
-   ÉTAT DU JEU
-   ===================================================== */
-
-let subjectName = "";
-let currentQuestion = 0;
-let selectedAnswer = false;
-let collectedLetters = Array(QUESTIONS.length).fill(null);
-let glitchAlreadyShown = false;
-let secretClickCount = 0;
-let secretUnlocked = false;
-let scanTimer = null;
-let scanStarted = false;
-let decryptStarted = false;
-let toastTimer = null;
-
-/* =====================================================
-   NAVIGATION ENTRE LES ÉCRANS
-   ===================================================== */
-
-function showScreen(screenToShow) {
-  Object.values(screens).forEach((screen) => {
-    screen.classList.remove("active");
+function afficherEcran(id) {
+  ecrans.forEach((ecran) => {
+    ecran.classList.remove("actif");
   });
 
-  screenToShow.classList.add("active");
+  document.getElementById(id).classList.add("actif");
 
   window.scrollTo({
     top: 0,
-    behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ? "auto"
-      : "smooth"
+    behavior: "smooth"
   });
 }
 
-/* =====================================================
-   ACCUEIL ET IDENTITÉ
-   ===================================================== */
 
-identityForm.addEventListener("submit", (event) => {
-  event.preventDefault();
+// ==========================================
+// QUESTIONS DU QUIZ
+// Les cinq premières lettres forment AMOUR.
+// La sixième question ne donne aucune lettre.
+// ==========================================
 
-  const enteredName = subjectInput.value.trim();
-
-  if (!enteredName) {
-    subjectInput.focus();
-    return;
+const questions = [
+  {
+    categorie: "ANALYSE DU REGARD",
+    texte: "Quel est le principal indice qui a déclenché cette enquête ?",
+    reponses: [
+      "Un mystérieux message",
+      "Des yeux beaucoup trop beaux",
+      "Une anomalie informatique"
+    ],
+    correcte: 1,
+    lettre: "A",
+    retour: "Indice confirmé : ce regard est suspect."
+  },
+  {
+    categorie: "OBSERVATION",
+    texte: "Que se passe-t-il lorsqu'un regard croise ces yeux ?",
+    reponses: [
+      "Le système reste parfaitement normal",
+      "Une panne de connexion",
+      "Une perte momentanée de concentration"
+    ],
+    correcte: 2,
+    lettre: "M",
+    retour: "Observation validée : concentration compromise."
+  },
+  {
+    categorie: "ANALYSE SCIENTIFIQUE",
+    texte: "Quelle est l'explication la plus probable ?",
+    reponses: [
+      "Un phénomène totalement banal",
+      "Un effet visuel sans importance",
+      "Un charme difficile à expliquer"
+    ],
+    correcte: 2,
+    lettre: "O",
+    retour: "Hypothèse retenue : charme hors du commun."
+  },
+  {
+    categorie: "INTERROGATOIRE",
+    texte: "Quel est le niveau de danger de ce regard ?",
+    reponses: [
+      "Faible",
+      "Modéré",
+      "Critique pour les cœurs sensibles"
+    ],
+    correcte: 2,
+    lettre: "U",
+    retour: "Alerte confirmée : risque élevé pour les cœurs."
+  },
+  {
+    categorie: "CONCLUSION INTERMÉDIAIRE",
+    texte: "Quelle mesure faut-il prendre face à une telle découverte ?",
+    reponses: [
+      "Clore immédiatement le dossier",
+      "Continuer l'enquête malgré les risques",
+      "Faire comme si de rien n'était"
+    ],
+    correcte: 1,
+    lettre: "R",
+    retour: "Dernière lettre récupérée. Décryptage imminent."
+  },
+  {
+    categorie: "QUESTION FINALE",
+    texte: "Peut-on vraiment considérer cette enquête comme objective ?",
+    reponses: [
+      "Oui, l'analyse est totalement neutre",
+      "Non, l'enquêteur semble déjà conquis",
+      "Le système refuse de répondre"
+    ],
+    correcte: 1,
+    lettre: null,
+    retour: "Biais détecté : l'enquête est devenue personnelle."
   }
+];
 
-  subjectName = enteredName;
-  scanMessage.textContent =
-    `Connexion au dossier de ${subjectName}. Préparation de l'analyse...`;
+let indexQuestion = 0;
+let lettresTrouvees = [];
 
-  showScreen(screens.scan);
-  startScan();
-});
+const boutonDemarrer = document.getElementById("bouton-demarrer");
+const boutonDecrypter = document.getElementById("bouton-decrypter");
+const boutonSuite = document.getElementById("bouton-suite");
+const boutonRecommencer = document.getElementById("bouton-recommencer");
 
-/* =====================================================
-   SCAN ANIMÉ
-   ===================================================== */
+const zoneQuestion = document.getElementById("question");
+const zoneReponses = document.getElementById("reponses");
+const zoneRetour = document.getElementById("retour-reponse");
 
-function startScan() {
-  if (scanTimer) {
-    clearInterval(scanTimer);
-  }
+const numeroQuestion = document.getElementById("numero-question");
+const categorieQuestion = document.getElementById("categorie-question");
+const progressionQuiz = document.getElementById("progression-quiz");
 
-  scanStarted = true;
 
-  let progress = 0;
-  scanProgress.style.width = "0%";
-  scanPercent.textContent = "0 %";
-  scanStatus.textContent = "CONNEXION AU DOSSIER...";
+// ==========================================
+// DÉMARRAGE ET ANALYSE
+// ==========================================
 
-  const stages = [
-    { limit: 20, text: "IDENTIFICATION DU SUJET..." },
-    { limit: 45, text: "ANALYSE DU REGARD..." },
-    { limit: 70, text: "MESURE DU NIVEAU DE FASCINATION..." },
-    { limit: 90, text: "VÉRIFICATION DES DONNÉES..." },
-    { limit: 100, text: "ACCÈS AUTORISÉ ♥" }
+boutonDemarrer.addEventListener("click", lancerAnalyse);
+
+function lancerAnalyse() {
+  afficherEcran("analyse");
+
+  const progression = document.getElementById("progression-analyse");
+  const pourcentage = document.getElementById("pourcentage");
+  const texteAnalyse = document.getElementById("texte-analyse");
+
+  const etapes = [
+    "Initialisation du protocole...",
+    "Recherche des indices visuels...",
+    "Analyse du niveau de charme...",
+    "Anomalie confirmée.",
+    "Préparation de l'interrogatoire..."
   ];
 
-  scanTimer = setInterval(() => {
-    progress = Math.min(progress + Math.floor(Math.random() * 8) + 3, 100);
+  let valeur = 0;
 
-    scanProgress.style.width = `${progress}%`;
-    scanPercent.textContent = `${progress} %`;
+  progression.style.width = "0%";
+  pourcentage.textContent = "0 %";
 
-    const stage = stages.find((item) => progress <= item.limit);
-    if (stage) {
-      scanStatus.textContent = stage.text;
+  const intervalle = setInterval(() => {
+    valeur += 2;
+
+    if (valeur > 100) {
+      valeur = 100;
     }
 
-    if (progress >= 100) {
-      clearInterval(scanTimer);
-      scanTimer = null;
-      scanStarted = false;
+    progression.style.width = valeur + "%";
+    pourcentage.textContent = valeur + " %";
 
-      setTimeout(() => {
-        currentQuestion = 0;
-        collectedLetters = Array(QUESTIONS.length).fill(null);
-        renderLetterSlots();
-        loadQuestion();
-        showScreen(screens.quiz);
-      }, 750);
-    }
-  }, 180);
-}
-
-/* =====================================================
-   QUIZ
-   ===================================================== */
-
-function loadQuestion() {
-  selectedAnswer = false;
-
-  const question = QUESTIONS[currentQuestion];
-
-  questionNumber.textContent = String(currentQuestion + 1).padStart(2, "0");
-  questionTag.textContent =
-    `QUESTION ${String(currentQuestion + 1).padStart(2, "0")}`;
-  questionText.textContent = question.question;
-
-  answersContainer.replaceChildren();
-  answerFeedback.textContent = "";
-  answerFeedback.className = "feedback";
-
-  nextButton.hidden = true;
-  nextButton.textContent =
-    currentQuestion === QUESTIONS.length - 1
-      ? "PASSER AU DÉCRYPTAGE →"
-      : "QUESTION SUIVANTE →";
-
-  quizProgress.style.width =
-    `${(currentQuestion / QUESTIONS.length) * 100}%`;
-
-  question.answers.forEach((answer, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "answer-option";
-
-    const key = document.createElement("span");
-    key.className = "option-key";
-    key.textContent = String.fromCharCode(65 + index);
-
-    const label = document.createElement("span");
-    label.textContent = answer;
-
-    button.append(key, label);
-    button.addEventListener("click", () => checkAnswer(index, button));
-
-    answersContainer.appendChild(button);
-  });
-
-  renderLetterSlots();
-}
-
-function checkAnswer(answerIndex, selectedButton) {
-  if (selectedAnswer) return;
-
-  const question = QUESTIONS[currentQuestion];
-  const allButtons = answersContainer.querySelectorAll(".answer-option");
-
-  if (answerIndex !== question.correct) {
-    selectedButton.classList.add("wrong");
-
-    answerFeedback.textContent =
-      "Réponse incorrecte. Analyse à reprendre : essaie encore.";
-    answerFeedback.className = "feedback error";
-
-    // On laisse réessayer : aucune lettre n'est attribuée
-    // tant que la bonne réponse n'a pas été sélectionnée.
-    return;
-  }
-
-  selectedAnswer = true;
-  selectedButton.classList.add("correct");
-
-  allButtons.forEach((button) => {
-    button.disabled = true;
-  });
-
-  // Une lettre par question, à un emplacement fixe :
-  // impossible de gagner des doublons en cliquant plusieurs fois.
-  collectedLetters[currentQuestion] = question.letter;
-
-  answerFeedback.textContent = `✓ ${question.success} Lettre récupérée : ${question.letter}`;
-  answerFeedback.className = "feedback success";
-
-  quizProgress.style.width =
-    `${((currentQuestion + 1) / QUESTIONS.length) * 100}%`;
-
-  renderLetterSlots();
-  nextButton.hidden = false;
-}
-
-nextButton.addEventListener("click", () => {
-  if (!selectedAnswer) return;
-
-  // Glitch surprise après la troisième bonne réponse.
-  if (currentQuestion === 2 && !glitchAlreadyShown) {
-    glitchAlreadyShown = true;
-    glitchOverlay.classList.add("visible");
-    return;
-  }
-
-  advanceQuiz();
-});
-
-glitchClose.addEventListener("click", () => {
-  glitchOverlay.classList.remove("visible");
-  advanceQuiz();
-});
-
-function advanceQuiz() {
-  if (currentQuestion < QUESTIONS.length - 1) {
-    currentQuestion += 1;
-    loadQuestion();
-    return;
-  }
-
-  showDecryptScreen();
-}
-
-/* =====================================================
-   AFFICHAGE DES LETTRES GAGNÉES
-   ===================================================== */
-
-function renderLetterSlots() {
-  letterSlots.replaceChildren();
-
-  QUESTIONS.forEach((question, index) => {
-    const slot = document.createElement("span");
-    slot.className = "letter-slot";
-
-    if (collectedLetters[index] !== null) {
-      slot.textContent = collectedLetters[index];
-      slot.classList.add("earned");
-    } else {
-      slot.textContent = "·";
-    }
-
-    slot.setAttribute(
-      "aria-label",
-      collectedLetters[index]
-        ? `Lettre ${collectedLetters[index]} récupérée`
-        : `Lettre ${index + 1} à récupérer`
+    const indexEtape = Math.min(
+      Math.floor(valeur / 22),
+      etapes.length - 1
     );
 
-    letterSlots.appendChild(slot);
+    texteAnalyse.textContent = etapes[indexEtape];
+
+    if (valeur >= 100) {
+      clearInterval(intervalle);
+
+      setTimeout(() => {
+        indexQuestion = 0;
+        lettresTrouvees = [];
+        afficherQuestion();
+        afficherEcran("quiz");
+      }, 650);
+    }
+  }, 45);
+}
+
+
+// ==========================================
+// AFFICHAGE DES QUESTIONS
+// ==========================================
+
+function afficherQuestion() {
+  const questionActuelle = questions[indexQuestion];
+
+  numeroQuestion.textContent =
+    `QUESTION ${String(indexQuestion + 1).padStart(2, "0")} / ${questions.length}`;
+
+  categorieQuestion.textContent = questionActuelle.categorie;
+
+  zoneQuestion.textContent = questionActuelle.texte;
+  zoneReponses.innerHTML = "";
+  zoneRetour.textContent = "";
+
+  progressionQuiz.style.width =
+    `${(indexQuestion / questions.length) * 100}%`;
+
+  questionActuelle.reponses.forEach((reponse, index) => {
+    const bouton = document.createElement("button");
+
+    bouton.className = "reponse";
+    bouton.textContent = reponse;
+
+    bouton.addEventListener("click", () => {
+      verifierReponse(index, bouton);
+    });
+
+    zoneReponses.appendChild(bouton);
   });
 }
 
-/* =====================================================
-   DÉCRYPTAGE
-   ===================================================== */
 
-function showDecryptScreen() {
-  const allLettersCollected = collectedLetters.every(
-    (letter, index) => letter === QUESTIONS[index].letter
-  );
+// ==========================================
+// VÉRIFICATION DES RÉPONSES
+// Une mauvaise réponse ne fait pas avancer.
+// Chaque lettre est liée à sa question.
+// ==========================================
 
-  if (!allLettersCollected) {
-    // Sécurité supplémentaire : le décryptage n'est possible
-    // que si toutes les réponses ont été validées.
-    currentQuestion = collectedLetters.findIndex((letter) => letter === null);
-    loadQuestion();
-    showScreen(screens.quiz);
+function verifierReponse(indexReponse, boutonClique) {
+  const questionActuelle = questions[indexQuestion];
+  const boutons = zoneReponses.querySelectorAll(".reponse");
+
+  if (indexReponse !== questionActuelle.correcte) {
+    boutonClique.classList.add("incorrecte");
+    zoneRetour.textContent =
+      "❌ Indice insuffisant. Réessaie, l'enquête continue.";
+
     return;
   }
 
-  decryptLetters.replaceChildren();
-
-  collectedLetters.forEach((letter) => {
-    const tile = document.createElement("span");
-    tile.className = "decrypt-letter";
-    tile.textContent = letter;
-    decryptLetters.appendChild(tile);
+  boutons.forEach((bouton) => {
+    bouton.disabled = true;
   });
 
-  decryptStatus.textContent = "> DÉCRYPTAGE EN ATTENTE";
-  decryptButton.disabled = false;
-  decryptButton.hidden = false;
-  decryptStarted = false;
+  boutonClique.classList.add("correcte");
 
-  showScreen(screens.decrypt);
-}
+  zoneRetour.textContent = "✓ " + questionActuelle.retour;
 
-decryptButton.addEventListener("click", () => {
-  if (decryptStarted) return;
-  decryptStarted = true;
-  decryptButton.disabled = true;
-  decryptButton.textContent = "DÉCRYPTAGE EN COURS...";
+  // On ne récupère une lettre que si la question en possède une.
+  // La sixième question a lettre: null, donc aucun E supplémentaire.
+  if (questionActuelle.lettre !== null) {
+    lettresTrouvees[indexQuestion] = questionActuelle.lettre;
+  }
 
-  const tiles = decryptLetters.querySelectorAll(".decrypt-letter");
-
-  decryptStatus.textContent = "> DÉCRYPTAGE DU MESSAGE...";
-  tiles.forEach((tile) => tile.classList.remove("revealed"));
-
-  tiles.forEach((tile, index) => {
-    setTimeout(() => {
-      tile.classList.add("revealed");
-
-      if (index === tiles.length - 1) {
-        setTimeout(() => {
-          decryptStatus.textContent = "> MESSAGE DÉCRYPTÉ : ACCÈS AUTORISÉ ♥";
-          decryptButton.hidden = true;
-          revealFinalMessage();
-        }, 500);
-      }
-    }, index * 350);
-  });
-});
-
-/* =====================================================
-   RÉVÉLATION FINALE
-   ===================================================== */
-
-function revealFinalMessage() {
-  revealedWord.textContent = SECRET_WORD;
-  finalName.textContent = subjectName;
-  loveMessage.textContent = LOVE_MESSAGE(subjectName);
+  progressionQuiz.style.width =
+    `${((indexQuestion + 1) / questions.length) * 100}%`;
 
   setTimeout(() => {
-    showScreen(screens.final);
-  }, 800);
-}
+    indexQuestion++;
 
-/* =====================================================
-   EASTER EGG : CLIQUER 7 FOIS SUR L'ŒIL
-   ===================================================== */
-
-function handleSecretClick() {
-  if (secretUnlocked) return;
-
-  secretClickCount += 1;
-
-  if (secretClickCount >= 7) {
-    secretUnlocked = true;
-    easterToast.classList.add("visible");
-
-    if (toastTimer) {
-      clearTimeout(toastTimer);
+    if (indexQuestion < questions.length) {
+      afficherQuestion();
+    } else {
+      afficherEcranDecryptage();
     }
-
-    toastTimer = setTimeout(() => {
-      easterToast.classList.remove("visible");
-    }, 5500);
-  }
+  }, 1100);
 }
 
-easterEgg.addEventListener("click", handleSecretClick);
 
-easterEgg.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    handleSecretClick();
-  }
-});
+// ==========================================
+// DÉCRYPTAGE : LE MOT EST TOUJOURS AMOUR
+// ==========================================
 
-/* =====================================================
-   RECOMMENCER L'ENQUÊTE
-   ===================================================== */
+function afficherEcranDecryptage() {
+  afficherEcran("decryptage");
 
-restartButton.addEventListener("click", () => {
-  if (scanTimer) {
-    clearInterval(scanTimer);
-    scanTimer = null;
-  }
+  // Correction du problème : le mot contient exactement 5 lettres.
+  document.getElementById("mot-cache").textContent = "_ _ _ _ _";
 
-  subjectName = "";
-  currentQuestion = 0;
-  selectedAnswer = false;
-  collectedLetters = Array(QUESTIONS.length).fill(null);
-  glitchAlreadyShown = false;
-  scanStarted = false;
-  decryptStarted = false;
+  document.getElementById("message-decryptage").textContent = "";
 
-  subjectInput.value = "";
-  scanProgress.style.width = "0%";
-  scanPercent.textContent = "0 %";
-  scanStatus.textContent = "CONNEXION AU DOSSIER...";
-
-  glitchOverlay.classList.remove("visible");
-  decryptButton.disabled = false;
-  decryptButton.hidden = false;
-  decryptButton.textContent = "DÉCRYPTER LE MESSAGE ⌁";
-
-  renderLetterSlots();
-  showScreen(screens.welcome);
-});
-
-/* =====================================================
-   CONTRÔLE DE COHÉRENCE AU CHARGEMENT
-   ===================================================== */
-
-if (
-  SECRET_WORD.length !== QUESTIONS.length ||
-  SECRET_WORD !== QUESTIONS.map((question) => question.letter).join("")
-) {
-  console.warn(
-    "Le mot secret doit correspondre aux lettres des questions. " +
-    "Vérifie SECRET_WORD et QUESTIONS."
-  );
+  boutonDecrypter.hidden = false;
+  boutonSuite.hidden = true;
 }
+
+boutonDecrypter.addEventListener("click", () => {
+  const motFinal = lettresTrouvees.join("");
+
+  // Vérification de sécurité : les lettres doivent former AMOUR.
+  if (motFinal !== "AMOUR") {
+    document.getElementById("mot-cache").textContent = "A M O U R";
+  } else {
+    document.getElementById("mot-cache").textContent =
+      lettresTrouvees.join(" ");
+  }
+
+  document.getElementById("message-decryptage").textContent =
+    "Décryptage réussi. Le dossier révèle enfin son secret. ♥";
+
+  boutonDecrypter.hidden = true;
+  boutonSuite.hidden = false;
+});
+
+boutonSuite.addEventListener("click", () => {
+  afficherEcran("final");
+});
+
+
+// ==========================================
+// EASTER EGG : CLIQUER 7 FOIS SUR LE CŒUR
+// ==========================================
+
+const coeurSecret = document.getElementById("coeur-secret");
+const messageSecret = document.getElementById("message-secret");
+
+let nombreClics = 0;
+
+coeurSecret.addEventListener("click", () => {
+  nombreClics++;
+
+  if (nombreClics < 7) {
+    coeurSecret.textContent = nombreClics % 2 === 0 ? "♡" : "♥";
+    return;
+  }
+
+  messageSecret.hidden = false;
+  coeurSecret.textContent = "♥";
+  coeurSecret.disabled = true;
+  coeurSecret.setAttribute("aria-label", "Secret découvert");
+
+  messageSecret.scrollIntoView({
+    behavior: "smooth",
+    block: "nearest"
+  });
+});
+
+
+// ==========================================
+// RECOMMENCER L'ENQUÊTE
+// ==========================================
+
+boutonRecommencer.addEventListener("click", () => {
+  indexQuestion = 0;
+  lettresTrouvees = [];
+
+  lancerAnalyse();
+});
