@@ -1,163 +1,85 @@
+
 /* ================================= */
 /* EYE INVESTIGATION PROTOCOL */
 /* ================================= */
-
 
 /* ============================= */
 /* QUESTIONS */
 /* ============================= */
 
 const questions = [
-
     {
-        question:
-            "Que se passe-t-il quand ces yeux me regardent ?",
-
-        category:
-            "ANALYSE VISUELLE",
-
+        question: "Que se passe-t-il quand ces yeux me regardent ?",
+        category: "ANALYSE VISUELLE",
         answers: [
-
             "Mon cerveau fonctionne normalement",
-
-            "Oups...Erreur système",
-
+            "Oups... Erreur système",
             "Je fixe un point au mur pour sauver ma dignité",
-
             "RIEN"
-
         ],
-
         correct: 1,
-
         letter: "A"
     },
-
-
     {
-        question:
-            "Combien de temps puis-je regarder ces yeux sans sourire ?",
-
-        category:
-            "TEST DE RÉSISTANCE",
-
+        question: "Combien de temps puis-je regarder ces yeux sans sourire ?",
+        category: "TEST DE RÉSISTANCE",
         answers: [
-
             "10 secondes",
-
             "30 secondes avec un peu de volonté",
-
-            "Environ 2 minutes si je pense à mon bout d sandwich que j'aurai du fini en 2016",
-
-            "Impossible à déterminer, je n'existe plus, je suis deja une soupe de Nada que tu peux ramasser à la cuillère"
-
+            "Environ 2 minutes si je pense à mon bout de sandwich que j'aurais dû finir en 2016",
+            "Impossible à déterminer, je n'existe plus. Je suis déjà une soupe de Nada, ramassable à la cuillère."
         ],
-
         correct: 3,
-
         letter: "M"
     },
-
-
     {
-        question:
-            "Selon les analyses, ces yeux sont...",
-
-        category:
-            "DIAGNOSTIC",
-
+        question: "Selon les analyses, ces yeux sont...",
+        category: "DIAGNOSTIC",
         answers: [
-
             "Normaux",
-
             "Bof hh",
-
-            "JOLIE",
-
+            "JOLIS",
             "Problématiquement MIAWgnifiques"
-
         ],
-
         correct: 3,
-
         letter: "O"
     },
-
-
     {
-        question:
-            "Quelle est la réaction scientifique, biologique, intergalactique face à un regard comme celui-ci ?",
-
-        category:
-            "PROTOCOLE DE SÉCURITÉ",
-
+        question: "Quelle est la réaction scientifique, biologique et intergalactique face à un regard comme celui-ci ?",
+        category: "PROTOCOLE DE SÉCURITÉ",
         answers: [
-
             "Rester concentrado",
-
-            "S'assoir et prendre des notes",
-
-            "Éviter tout contact visuel de ce BG",
-
-            "J'abondonne, j'en peux plus!"
-
+            "M'asseoir et prendre des notes",
+            "Éviter tout contact visuel avec ce BG",
+            "J'abandonne, j'en peux plus !"
         ],
-
         correct: 3,
-
         letter: "U"
     },
-
-
     {
-        question:
-            "Après plusieurs heures d'analyse, quelle conclusion est la plus probable ?",
-
-        category:
-            "CONCLUSION",
-
+        question: "Après plusieurs heures d'analyse, quelle conclusion est la plus probable ?",
+        category: "CONCLUSION",
         answers: [
-
-            "Les données sont insuffisantes, je peux rien en déduire",
-
-            "Il existe une anomalie, mais c'est quoi?",
-
-            "Le phénomène est inexplicable ",
-
-            "MIIIIIIIIIAAAAAAAAAAAAWWWWW, ces yeux sont à moi"
-
+            "Les données sont insuffisantes, je ne peux rien en déduire",
+            "Il existe une anomalie, mais c'est quoi ?",
+            "Le phénomène est inexplicable",
+            "MIIIIIIIIIAAAAAAAAAAAAWWWWW, ces yeux sont à moi !"
         ],
-
         correct: 3,
-
         letter: "R"
     },
-
-
     {
-        question:
-            "Dernière question. Pourquoi cette enquête existe-t-elle ?",
-
-        category:
-            "QUESTION FINALE",
-
+        question: "Dernière question. Pourquoi cette enquête existe-t-elle ?",
+        category: "QUESTION FINALE",
         answers: [
-
             "Pour la science",
-
             "Pour obtenir des données",
-
             "Pour tester une hypothèse",
-
-            "Pour ces beaux yeux (et bien sur le manger après..hihi)"
-
+            "Pour ces beaux yeux (et bien sûr pour les manger après... hihi)"
         ],
-
         correct: 3,
-
         letter: "<3"
     }
-
 ];
 
 
@@ -166,10 +88,34 @@ const questions = [
 /* ============================= */
 
 let currentQuestion = 0;
-
 let collectedLetters = [];
-
 let score = 0;
+
+let scanInterval = null;
+let decryptInterval = null;
+let transitionTimeout = null;
+
+
+/* ============================= */
+/* OUTIL : ANNULER LES TIMERS */
+/* ============================= */
+
+function clearTimers() {
+    if (scanInterval !== null) {
+        clearInterval(scanInterval);
+        scanInterval = null;
+    }
+
+    if (decryptInterval !== null) {
+        clearInterval(decryptInterval);
+        decryptInterval = null;
+    }
+
+    if (transitionTimeout !== null) {
+        clearTimeout(transitionTimeout);
+        transitionTimeout = null;
+    }
+}
 
 
 /* ============================= */
@@ -177,33 +123,47 @@ let score = 0;
 /* ============================= */
 
 function showScreen(id) {
+    const target = document.getElementById(id);
 
-    document
-        .querySelectorAll(".screen")
-        .forEach(screen => {
+    if (!target) {
+        console.error(`Écran introuvable : #${id}`);
+        return;
+    }
 
-            screen.classList.remove("active");
+    document.querySelectorAll(".screen").forEach(screen => {
+        screen.classList.remove("active");
+    });
 
-        });
-
-
-    document
-        .getElementById(id)
-        .classList.add("active");
-
+    target.classList.add("active");
 }
 
 
 /* ============================= */
-/* COMMENCER */
+/* COMMENCER L'ENQUÊTE */
 /* ============================= */
 
 function startInvestigation() {
+    clearTimers();
+
+    currentQuestion = 0;
+    collectedLetters = Array(questions.length).fill(null);
+    score = 0;
+
+    const bar = document.getElementById("progressBar");
+    const percentage = document.getElementById("percentage");
+    const scanText = document.getElementById("scanText");
+
+    if (!bar || !percentage || !scanText) {
+        console.error("Éléments du scan manquants dans le HTML.");
+        return;
+    }
+
+    bar.style.width = "0%";
+    percentage.textContent = "0%";
+    scanText.textContent = "Initialisation du protocole...";
 
     showScreen("scan");
-
     startScan();
-
 }
 
 
@@ -212,254 +172,160 @@ function startInvestigation() {
 /* ============================= */
 
 function startScan() {
-
     let progress = 0;
 
-    const bar =
-        document.getElementById("progressBar");
-
-    const percentage =
-        document.getElementById("percentage");
-
-    const scanText =
-        document.getElementById("scanText");
-
+    const bar = document.getElementById("progressBar");
+    const percentage = document.getElementById("percentage");
+    const scanText = document.getElementById("scanText");
 
     const messages = [
-
         "Connexion au système...",
-
         "Recherche du sujet...",
-
         "Analyse des données visuelles...",
-
         "Mesure du niveau de danger...",
-
         "Détection d'anomalies...",
-
         "Résultat : beaucoup trop mignon.",
-
         "Préparation du questionnaire..."
-
     ];
 
+    scanInterval = setInterval(() => {
+        progress = Math.min(progress + 1, 100);
 
-    const interval = setInterval(() => {
+        bar.style.width = `${progress}%`;
+        percentage.textContent = `${progress}%`;
 
-        progress += 1;
+        if (progress % 15 === 0 || progress === 100) {
+            const index = Math.min(
+                Math.floor(progress / 15),
+                messages.length - 1
+            );
 
-        bar.style.width =
-            progress + "%";
-
-        percentage.textContent =
-            progress + "%";
-
-
-        if (progress % 15 === 0) {
-
-            const index =
-                Math.min(
-                    Math.floor(progress / 15),
-                    messages.length - 1
-                );
-
-            scanText.textContent =
-                messages[index];
-
+            scanText.textContent = messages[index];
         }
-
 
         if (progress >= 100) {
+            clearInterval(scanInterval);
+            scanInterval = null;
 
-            clearInterval(interval);
-
-            setTimeout(() => {
-
-                currentQuestion = 0;
-
-                collectedLetters = [];
-
-                score = 0;
-
+            transitionTimeout = setTimeout(() => {
+                transitionTimeout = null;
                 loadQuestion();
-
                 showScreen("quiz");
-
             }, 700);
-
         }
-
     }, 35);
-
 }
 
 
 /* ============================= */
-/* CHARGER QUESTION */
+/* CHARGER UNE QUESTION */
 /* ============================= */
 
 function loadQuestion() {
+    const q = questions[currentQuestion];
 
-    const q =
-        questions[currentQuestion];
+    if (!q) {
+        showScreen("decrypt");
+        decryptWord();
+        return;
+    }
 
-
-    document.getElementById(
-        "questionNumber"
-    ).textContent =
-
+    document.getElementById("questionNumber").textContent =
         `QUESTION ${String(currentQuestion + 1).padStart(2, "0")} / ${questions.length}`;
 
+    document.getElementById("score").textContent =
+        `DATA : ${score}`;
 
-    document.getElementById(
-        "score"
-    ).textContent =
+    document.getElementById("question").textContent = q.question;
 
-        `DATA: ${score}`;
+    document.querySelector(".question-category").textContent =
+        q.category;
 
-
-    document.getElementById(
-        "question"
-    ).textContent = q.question;
-
-
-    document.querySelector(
-        ".question-category"
-    ).textContent = q.category;
-
-
-    const answersContainer =
-        document.getElementById("answers");
-
-
+    const answersContainer = document.getElementById("answers");
     answersContainer.innerHTML = "";
 
-
     q.answers.forEach((answer, index) => {
+        const button = document.createElement("button");
 
-        const button =
-            document.createElement("div");
-
-
+        button.type = "button";
         button.classList.add("answer");
+        button.textContent = answer;
 
-
-        button.textContent =
-            answer;
-
-
-        button.onclick = () =>
+        button.addEventListener("click", () => {
             selectAnswer(index, button);
-
+        });
 
         answersContainer.appendChild(button);
-
     });
 
-
     updateLetters();
-
 }
 
 
 /* ============================= */
-/* RÉPONSE */
+/* SÉLECTIONNER UNE RÉPONSE */
 /* ============================= */
 
 function selectAnswer(index, element) {
+    const q = questions[currentQuestion];
 
-    const q =
-        questions[currentQuestion];
+    if (!q || element.disabled) {
+        return;
+    }
 
-
-    const allAnswers =
-        document.querySelectorAll(".answer");
-
+    const allAnswers = document.querySelectorAll(".answer");
 
     allAnswers.forEach(answer => {
-
-        answer.style.pointerEvents =
-            "none";
-
+        answer.disabled = true;
+        answer.style.pointerEvents = "none";
     });
 
-
     if (index === q.correct) {
-
         element.classList.add("correct");
 
         score += 1;
 
-        collectedLetters.push(q.letter);
+        // Chaque lettre reste liée à sa question.
+        collectedLetters[currentQuestion] = q.letter;
 
         updateLetters();
-
     } else {
-
         element.classList.add("wrong");
 
-        allAnswers[q.correct]
-            .classList.add("correct");
-
+        allAnswers[q.correct].classList.add("correct");
     }
 
+    document.getElementById("score").textContent =
+        `DATA : ${score}`;
 
-    setTimeout(() => {
-
+    transitionTimeout = setTimeout(() => {
+        transitionTimeout = null;
         currentQuestion++;
 
-
-        if (
-            currentQuestion >=
-            questions.length
-        ) {
-
+        if (currentQuestion >= questions.length) {
             showScreen("decrypt");
-
+            decryptWord();
         } else {
-
             loadQuestion();
-
         }
-
     }, 900);
-
 }
 
 
 /* ============================= */
-/* AFFICHER LETTRES */
+/* AFFICHER LES LETTRES */
 /* ============================= */
 
 function updateLetters() {
+    const lettersElement = document.getElementById("letters");
 
-    let display = "";
-
-
-    for (
-        let i = 0;
-        i < questions.length;
-        i++
-    ) {
-
-        if (collectedLetters[i]) {
-
-            display +=
-                collectedLetters[i] + " ";
-
-        } else {
-
-            display += "_ ";
-
-        }
-
+    if (!lettersElement) {
+        return;
     }
 
-
-    document.getElementById(
-        "letters"
-    ).textContent = display;
-
+    lettersElement.textContent = questions
+        .map((q, index) => collectedLetters[index] || "_")
+        .join(" ");
 }
 
 
@@ -468,98 +334,84 @@ function updateLetters() {
 /* ============================= */
 
 function decryptWord() {
+    if (decryptInterval !== null) {
+        clearInterval(decryptInterval);
+    }
 
-    const stream =
-        document.getElementById("dataStream");
+    const stream = document.getElementById("dataStream");
 
+    if (!stream) {
+        console.error("Élément #dataStream introuvable dans le HTML.");
+        showScreen("final");
+        return;
+    }
 
     let counter = 0;
 
+    stream.textContent = "INITIALISATION DU DÉCRYPTAGE...";
 
-    const interval = setInterval(() => {
-
+    decryptInterval = setInterval(() => {
         counter++;
 
-
-        stream.textContent =
-            generateRandomBinary();
-
+        stream.textContent = generateRandomBinary();
 
         if (counter >= 20) {
+            clearInterval(decryptInterval);
+            decryptInterval = null;
 
-            clearInterval(interval);
-
+            // AMOUR en code binaire ASCII.
             stream.textContent =
                 "01000001 01001101 01001111 01010101 01010010";
 
-            setTimeout(() => {
-
+            transitionTimeout = setTimeout(() => {
+                transitionTimeout = null;
                 showScreen("final");
-
             }, 1000);
-
         }
-
     }, 100);
-
 }
 
 
 /* ============================= */
-/* BINAIRE ALÉATOIRE */
+/* GÉNÉRER DU BINAIRE ALÉATOIRE */
 /* ============================= */
 
 function generateRandomBinary() {
-
-    let result = "";
-
-
-    for (let i = 0; i < 5; i++) {
-
-        result +=
-            Math.random()
-                .toString(2)
-                .substring(2, 10);
-
-        result += " ";
-
-    }
-
-
-    return result;
-
+    return Array.from({ length: 5 }, () => {
+        return Math.floor(Math.random() * 256)
+            .toString(2)
+            .padStart(8, "0");
+    }).join(" ");
 }
 
 
 /* ============================= */
-/* RESTART */
+/* RECOMMENCER */
 /* ============================= */
 
 function restart() {
+    clearTimers();
 
     currentQuestion = 0;
-
-    collectedLetters = [];
-
+    collectedLetters = Array(questions.length).fill(null);
     score = 0;
 
+    const bar = document.getElementById("progressBar");
+    const percentage = document.getElementById("percentage");
+    const scanText = document.getElementById("scanText");
+    const stream = document.getElementById("dataStream");
 
-    document.getElementById(
-        "progressBar"
-    ).style.width = "0%";
+    if (bar) bar.style.width = "0%";
+    if (percentage) percentage.textContent = "0%";
 
+    if (scanText) {
+        scanText.textContent = "Initialisation du protocole...";
+    }
 
-    document.getElementById(
-        "percentage"
-    ).textContent = "0%";
+    if (stream) {
+        stream.textContent = "";
+    }
 
-
-    document.getElementById(
-        "scanText"
-    ).textContent =
-        "Initialisation du protocole...";
-
-
+    updateLetters();
     showScreen("home");
-
 }
