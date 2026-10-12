@@ -1,204 +1,180 @@
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#08060d">
-  <meta name="description" content="Une enquête confidentielle sur une paire d'yeux absolument fascinante.">
-  <title>Eye Investigation Protocol | Dossier confidentiel</title>
+  <meta name="theme-color" content="#100817">
+  <title>Protocole d'investigation — Tes beaux yeux</title>
   <link rel="stylesheet" href="style.css">
   <script src="script.js" defer></script>
 </head>
+
 <body>
-  <div class="scanlines" aria-hidden="true"></div>
-  <div class="ambient ambient-one" aria-hidden="true"></div>
-  <div class="ambient ambient-two" aria-hidden="true"></div>
+  <div class="fond-lumineux"></div>
+  <div class="grille-fond"></div>
 
-  <header class="topbar">
-    <a class="brand" href="#" aria-label="Retour à l'accueil">
-      <span class="brand-icon">◉</span>
-      <span>EYE<span class="pink">_</span>INVESTIGATION</span>
-    </a>
-    <span class="status"><span class="status-dot"></span> SYSTÈME ACTIF</span>
-  </header>
+  <main class="conteneur">
 
-  <main class="main-container">
-    <!-- ACCUEIL -->
-    <section id="welcome-screen" class="screen active">
-      <div class="eyebrow"><span class="tiny-square"></span> DOSSIER CLASSIFIÉ // N° 001</div>
+    <!-- ÉCRAN D'ACCUEIL -->
+    <section id="accueil" class="ecran actif">
+      <div class="symbole">◈</div>
+      <p class="sur-titre">DOSSIER CONFIDENTIEL Nº 001</p>
 
-      <div class="hero-eye" id="easter-egg" role="button"
-           tabindex="0" aria-label="Élément mystérieux à examiner">
-        <div class="eye-ring ring-outer"></div>
-        <div class="eye-ring ring-inner"></div>
-        <div class="eye-core">◉</div>
-        <span class="eye-spark spark-one">✦</span>
-        <span class="eye-spark spark-two">✧</span>
-      </div>
+      <h1>PROTOCOLE<br><span>D'INVESTIGATION</span></h1>
 
-      <h1>UNE ENQUÊTE<br> <span class="gradient-text">DANS SES YEUX.</span></h1>
-      <p class="intro">
-        Certaines énigmes méritent d'être résolues.
-        La tienne commence par une paire d'yeux beaucoup trop fascinante.
+      <div class="ligne-decorative"></div>
+
+      <p class="texte-intro">
+        Une anomalie a été détectée.<br>
+        Un regard semble avoir perturbé tous les systèmes.
       </p>
 
-      <div class="classified-card">
-        <div class="card-heading">
-          <span>FICHE DU SUJET</span>
-          <span class="confidential">CONFIDENTIEL</span>
-        </div>
-        <div class="file-line"><span>IDENTITÉ</span><strong>À DÉCOUVRIR</strong></div>
-        <div class="file-line"><span>NIVEAU DE RISQUE</span><strong class="pink">EXTRÊMEMENT MIGNON</strong></div>
-        <div class="file-line"><span>ANOMALIE DÉTECTÉE</span><strong>REGARD INOUBLIABLE</strong></div>
+      <div class="carte-dossier">
+        <p><span>SUJET :</span> Une personne aux yeux remarquables</p>
+        <p><span>NIVEAU DE RISQUE :</span> Extrêmement craquant</p>
+        <p><span>STATUT :</span> Enquête en cours</p>
       </div>
 
-      <form id="identity-form" class="identity-form">
-        <label for="subject-name">IDENTIFIE LE SUJET DE L'ENQUÊTE</label>
-        <input id="subject-name" name="subject-name" type="text"
-               maxlength="32" placeholder="Son prénom ou son surnom..."
-               autocomplete="off" required>
-        <button class="button button-primary" type="submit">
-          LANCER L'INVESTIGATION <span>↗</span>
-        </button>
-      </form>
-      <p class="microcopy">ACCÈS RESTREINT · AUTORISATION REQUISE</p>
-    </section>
-
-    <!-- SCAN -->
-    <section id="scan-screen" class="screen">
-      <div class="eyebrow">ÉTAPE 01 // ANALYSE BIOMÉTRIQUE</div>
-      <div class="section-icon">⌁</div>
-      <h2>Analyse en cours<span class="pink">...</span></h2>
-      <p class="intro" id="scan-message">Initialisation du protocole confidentiel.</p>
-
-      <div class="scan-panel">
-        <div class="scan-visual">
-          <div class="scan-circle"></div>
-          <div class="scan-crosshair">+</div>
-          <div class="scan-line"></div>
-          <span class="scan-label">SCAN VISUEL</span>
-        </div>
-        <div class="progress-track">
-          <div id="scan-progress" class="progress-fill"></div>
-        </div>
-        <div class="progress-meta">
-          <span id="scan-status">CONNEXION AU DOSSIER...</span>
-          <span id="scan-percent">0 %</span>
-        </div>
-      </div>
-
-      <p class="microcopy">NE PAS DÉTOURNER LE REGARD.</p>
-    </section>
-
-    <!-- QUIZ -->
-    <section id="quiz-screen" class="screen">
-      <div class="eyebrow">ÉTAPE 02 // INTERROGATOIRE</div>
-      <div class="quiz-heading">
-        <div>
-          <h2>Test de fascination<span class="pink">.</span></h2>
-          <p class="muted">Une bonne réponse. Une lettre récupérée.</p>
-        </div>
-        <div class="question-counter"><span id="question-number">01</span><span class="muted"> / 05</span></div>
-      </div>
-
-      <div class="progress-track quiz-progress-track">
-        <div id="quiz-progress" class="progress-fill"></div>
-      </div>
-
-      <div class="letter-status">
-        <span class="muted">FRAGMENTS RÉCUPÉRÉS</span>
-        <div id="letter-slots" class="letter-slots" aria-label="Lettres récupérées"></div>
-      </div>
-
-      <article class="question-card">
-        <div class="question-tag" id="question-tag">QUESTION 01</div>
-        <h3 id="question-text">Chargement de la question...</h3>
-        <div id="answers" class="answers"></div>
-        <p id="answer-feedback" class="feedback" aria-live="polite"></p>
-        <button id="next-question" class="button button-primary" type="button" hidden>
-          QUESTION SUIVANTE <span>→</span>
-        </button>
-      </article>
-
-      <p class="microcopy">PROTOCOLE DE VÉRITÉ · AUCUNE RÉPONSE AU HASARD</p>
-    </section>
-
-    <!-- DÉCRYPTAGE -->
-    <section id="decrypt-screen" class="screen">
-      <div class="eyebrow">ÉTAPE 03 // DÉCRYPTAGE</div>
-      <div class="section-icon">⌘</div>
-      <h2>Fragments récupérés<span class="pink">.</span></h2>
-      <p class="intro">
-        Tous les fragments sont authentifiés. Le système peut maintenant
-        révéler le message dissimulé dans cette enquête.
+      <p class="avertissement">
+        Attention : cette enquête pourrait révéler des sentiments inattendus.
       </p>
 
-      <div id="decrypt-letters" class="decrypt-letters" aria-label="Mot secret">
-      </div>
-
-      <div class="decrypt-console">
-        <p>&gt; VÉRIFICATION DES FRAGMENTS...</p>
-        <p>&gt; ORDRE DES LETTRES : VALIDÉ</p>
-        <p id="decrypt-status">&gt; DÉCRYPTAGE EN ATTENTE</p>
-      </div>
-
-      <button id="decrypt-button" class="button button-primary" type="button">
-        DÉCRYPTER LE MESSAGE <span>⌁</span>
-      </button>
-      <p class="microcopy">ATTENTION : RISQUE ÉLEVÉ DE SOURIRE.</p>
-    </section>
-
-    <!-- RÉVÉLATION FINALE -->
-    <section id="final-screen" class="screen">
-      <div class="eyebrow">DOSSIER DÉCLASSIFIÉ // RÉSULTAT FINAL</div>
-      <div class="final-heart">♡</div>
-      <p class="final-kicker">MESSAGE SECRET POUR</p>
-      <h2 id="final-name" class="gradient-text">TOI</h2>
-
-      <div id="revealed-word" class="revealed-word" aria-label="Mot secret"></div>
-
-      <article class="love-letter">
-        <div class="letter-header">
-          <span>TRANSMISSION PERSONNELLE</span>
-          <span>♥ CONFIDENTIEL</span>
-        </div>
-        <p id="love-message"></p>
-        <div class="signature">Fin du rapport. <span>♥</span></div>
-      </article>
-
-      <p class="final-footnote">
-        CONCLUSION : TON REGARD EST UNE ANOMALIE QUE JE NE SOUHAITE PAS RÉSOUDRE.
-      </p>
-      <button id="restart-button" class="button button-secondary" type="button">
-        RECOMMENCER L'ENQUÊTE ↻
+      <button id="bouton-demarrer" class="bouton-principal">
+        LANCER L'ENQUÊTE <span>→</span>
       </button>
     </section>
 
-    <!-- EASTER EGG -->
-    <div id="easter-toast" class="easter-toast" role="status" aria-live="polite">
-      <span class="toast-icon">♥</span>
-      <div>
-        <strong>SUCCÈS SECRET DÉBLOQUÉ</strong>
-        <p>Le cœur de l'enquêtrice a été officiellement volé.</p>
-      </div>
-    </div>
 
-    <div id="glitch-overlay" class="glitch-overlay" aria-hidden="true">
-      <div class="glitch-box">
-        <p>ERREUR CRITIQUE // 404</p>
-        <h2>OBJECTIVITÉ<br>INTROUVABLE.</h2>
-        <p>Le sujet possède des yeux beaucoup trop beaux.</p>
-        <button id="glitch-close" class="button button-primary" type="button">
-          REDÉMARRER MON CŒUR ♥
-        </button>
+    <!-- ÉCRAN D'ANALYSE -->
+    <section id="analyse" class="ecran">
+      <p class="sur-titre">ANALYSE BIOMÉTRIQUE</p>
+      <h2>Analyse du regard en cours<span class="points">...</span></h2>
+
+      <div class="cercle-scan">
+        <div class="cercle-interieur">◉</div>
+        <div class="ligne-scan"></div>
       </div>
-    </div>
+
+      <p id="texte-analyse" class="texte-analyse">
+        Initialisation du protocole...
+      </p>
+
+      <div class="barre-progression">
+        <div id="progression-analyse"></div>
+      </div>
+
+      <p id="pourcentage" class="pourcentage">0 %</p>
+    </section>
+
+
+    <!-- ÉCRAN DU QUIZ -->
+    <section id="quiz" class="ecran">
+      <p class="sur-titre">INTERROGATOIRE CONFIDENTIEL</p>
+      <h2>Résolution de l'enquête</h2>
+
+      <div class="infos-quiz">
+        <span id="numero-question">QUESTION 01 / 06</span>
+        <span id="categorie-question">ANALYSE</span>
+      </div>
+
+      <div class="barre-progression">
+        <div id="progression-quiz"></div>
+      </div>
+
+      <div class="carte-question">
+        <p id="question" class="question"></p>
+        <div id="reponses" class="reponses"></div>
+        <p id="retour-reponse" class="retour-reponse" aria-live="polite"></p>
+      </div>
+
+      <p class="petit-texte">
+        Réponds correctement pour poursuivre l'investigation.
+      </p>
+    </section>
+
+
+    <!-- ÉCRAN DE DÉCRYPTAGE -->
+    <section id="decryptage" class="ecran">
+      <p class="sur-titre">FICHIER CRYPTÉ DÉTECTÉ</p>
+      <h2>Un dernier élément à découvrir...</h2>
+
+      <div class="terminal">
+        <p>ANALYSE TERMINÉE</p>
+        <p>DONNÉES COLLECTÉES : <span>100 %</span></p>
+        <p>RÉSULTAT : <span>CONFIDENTIEL</span></p>
+        <div id="mot-cache" class="mot-cache">_ _ _ _ _</div>
+      </div>
+
+      <p class="texte-intro">
+        Toutes les pistes convergent vers un seul mot.
+      </p>
+
+      <button id="bouton-decrypter" class="bouton-principal">
+        DÉCRYPTER LE MESSAGE ♥
+      </button>
+
+      <p id="message-decryptage" class="message-decryptage" aria-live="polite"></p>
+
+      <button id="bouton-suite" class="bouton-secondaire" hidden>
+        Découvrir le résultat →
+      </button>
+    </section>
+
+
+    <!-- ÉCRAN FINAL -->
+    <section id="final" class="ecran">
+      <div class="coeur-grand">♥</div>
+      <p class="sur-titre">RAPPORT FINAL — CLASSÉ SECRET</p>
+
+      <h1>ENQUÊTE<br><span>RÉSOLUE</span></h1>
+
+      <div class="mot-final">AMOUR</div>
+
+      <div class="carte-finale">
+        <p class="texte-final">
+          Après une analyse approfondie, un constat s'impose :
+        </p>
+
+        <p class="declaration">
+          Tes yeux ont quelque chose d'unique.
+          Ils attirent le regard, retiennent l'attention
+          et rendent cette enquête beaucoup trop personnelle.
+        </p>
+
+        <p class="signature">
+          Fin du rapport. ♥
+        </p>
+      </div>
+
+      <p class="avertissement">
+        Certaines découvertes ne peuvent plus être ignorées.
+      </p>
+
+      <button id="bouton-recommencer" class="bouton-secondaire">
+        Recommencer l'enquête ↻
+      </button>
+    </section>
+
+
+    <!-- PETIT EASTER EGG : CLIQUER 7 FOIS -->
+    <footer class="pied-de-page">
+      <p>PROTOCOLE CONFIDENTIEL · ACCÈS RESTREINT</p>
+
+      <button
+        id="coeur-secret"
+        class="coeur-secret"
+        aria-label="Petit secret caché"
+        title="Un petit détail semble étrange..."
+      >♡</button>
+
+      <div id="message-secret" class="message-secret" hidden aria-live="polite">
+        <p class="secret-titre">✦ SECRET DÉBLOQUÉ ✦</p>
+        <p>Tu as trouvé le secret...</p>
+        <p>Le véritable mystère, c'est que tu me fais fondre. ♥</p>
+        <p class="secret-fin">Bravo, agent spécial des beaux yeux.</p>
+      </div>
+    </footer>
+
   </main>
-
-  <footer class="footer">
-    <span>ŒIL POUR ŒIL. CŒUR POUR CŒUR.</span>
-    <span>PROTOCOLE V.01 <span class="pink">♥</span></span>
-  </footer>
 </body>
 </html>
